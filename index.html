@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dokumen</title>
+    <link rel="stylesheet" href="style.css">
+    <script defer src="script.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+</head>
+<body style="background-image: url('asset/cloud.jpg');">
+    <div class="container">
+        <div class="weather-input">
+            <div class="input-grup">
+                <input type="text" id="userLocation" placeholder="Masukkan Lokasi Anda">
+                <i class="fa fa-search" onclick="findUserLocation()"></i>
+            </div>
+            <div class="loading-spinner"></div>
+
+            <div class="weatherIcon"></div>
+            <h2 class="temperature"></h2>
+            <div class="feelslike"></div>
+            <div class="description"></div>
+            <hr>
+            <div class="date"></div>
+            <div class="city"></div>
+
+        </div>
+
+        <div class="weather-output">
+            <h2 class="heading">Sorotan Hari Ini</h2>
+            <div class="hightlights">
+                <div class="humidity">
+                    Kelembapan
+                    <i class="fa-solid fa-water"></i>
+                    <h1 id="HValue"></h1>
+                </div>
+                <div class="wind-speed">
+                    Kecepatan Angin
+                    <i class="fa-solid fa-wind"></i>
+                    <h1 id="WValue"></h1>
+                </div>
+                <div class="sun">
+                    <span>
+                        <i class="fa-solid fa-sun"></i>
+                        <p><span id="SRValue"></span>Terbit</p>
+                    </span>
+                    <span>
+                        <i class="fa-regular fa-sun"></i>
+                        <p><span id="SSValue"></span>Terbenam</p>
+                    </span>
+                </div>
+                <div class="clouds">
+                    Awan
+                    <i class="fa-solid fa-cloud"></i>
+                    <h1 id="CValue"></h1>
+                </div>
+                <div class="uv-index">
+                    Visibilitas
+                    <i class="fa-solid fa-eye"></i>
+                    <h1 id="VValue"></h1>
+                </div>
+                <div class="pressure">
+                    Tekanan
+                    <i class="fa-solid fa-volcano"></i>
+                    <h1 id="PValue"></h1>
+                </div>
+            </div>
+            <h2 class="heasing">Minggu Ini</h2>
+            <div class="Forecast">
+                <div class="daily-forecast" id="dailyForecast"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const toggleButton = document.getElementById('toggle-theme');
+        let isLightTheme = true;
+
+        toggleButton.addEventListener('click', () => {
+            console.log("Tombol diklik!");
+            isLightTheme = !isLightTheme;
+            document.body.style.backgroundImage = isLightTheme ? "url('asset/cloud.jpg')" : "url('asset/night.jpg')";
+        });
+    </script>
+</body>
+</html>
