@@ -1,3 +1,4 @@
+/* Deklarasi Variabel Element */
 const userLocation = document.getElementById("userLocation"),
     converter = document.getElementById("converter"),
     weatherIcon = document.querySelector(".weatherIcon"),
@@ -13,33 +14,171 @@ const userLocation = document.getElementById("userLocation"),
     CValue = document.getElementById("CValue"),
     VValue = document.getElementById("VValue"),
     PValue = document.getElementById("PValue"),
-    Forecast = document.querySelector(".Forecast");
+    Forecast = document.querySelector(".Forecast"),
+    WDValue = document.getElementById("WDValue"),
+    RCValue = document.getElementById("RCValue"),
+    RVValue = document.getElementById("RVValue");
 
+/* Endpoint API */
 const WEATHER_API_ENDPOINT = `https://api.openweathermap.org/data/2.5/weather?appid=1e3e8f230b6064d27976e41163a82b77&q=`;
 const WEATHER_DATA_ENDPOINT = `https://api.openweathermap.org/data/2.5/forecast?appid=1e3e8f230b6064d27976e41163a82b77&exclude=minutely&units=metric&`;
 
+const darkModeBtn = document.getElementById('darkMode');
+const notificationsBtn = document.getElementById('notifications');
+const getLocationBtn = document.getElementById('getLocation');
+const shareWeatherBtn = document.getElementById('shareWeather');
 
+/* Pengaturan Tema Gelap */
+function initTheme() {
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+    updateDarkModeButton(savedTheme);
+}
+
+function updateDarkModeButton(theme) {
+    darkModeBtn.innerHTML = `<i class="fas fa-${theme === 'dark' ? 'sun' : 'moon'}"></i>`;
+}
+
+darkModeBtn.addEventListener('click', () => {
+    const currentTheme = document.documentElement.getAttribute('data-theme');
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', newTheme);
+    localStorage.setItem('theme', newTheme);
+    updateDarkModeButton(newTheme);
+});
+
+/* Fitur Geolokasi */
+getLocationBtn.addEventListener('click', () => {
+    if (navigator.geolocation) {
+        getLocationBtn.disabled = true;
+        navigator.geolocation.getCurrentPosition(
+            async (position) => {
+                const { latitude, longitude } = position.coords;
+                try {
+                    const response = await fetch(
+                        `${WEATHER_API_ENDPOINT}&lat=${latitude}&lon=${longitude}`
+                    );
+                    const data = await response.json();
+                    if (data.name) {
+                        userLocation.value = data.name;
+                        findUserLocation();
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('Tidak dapat mendapatkan lokasi');
+                } finally {
+                    getLocationBtn.disabled = false;
+                }
+            },
+            (error) => {
+                console.error('Geolocation error:', error);
+                alert('Tidak dapat mengakses lokasi Anda');
+                getLocationBtn.disabled = false;
+            }
+        );
+    } else {
+        alert('Browser Anda tidak mendukung geolokasi');
+    }
+});
+
+shareWeatherBtn.addEventListener('click', async () => {
+    const weatherInfo = `
+        Cuaca di ${city.innerText}:
+        Suhu: ${temperature.innerText}
+        Kondisi: ${description.innerText}
+        Kelembapan: ${HValue.innerText}
+        Kecepatan Angin: ${WValue.innerText}
+    `.trim();
+
+    if (navigator.share) {
+        try {
+            await navigator.share({
+                title: 'Info Cuaca',
+                text: weatherInfo,
+                url: window.location.href
+            });
+        } catch (error) {
+            console.error('Error sharing:', error);
+        }
+    } else {
+        navigator.clipboard.writeText(weatherInfo)
+            .then(() => alert('Info cuaca disalin ke clipboard!'))
+            .catch(err => console.error('Error copying to clipboard:', err));
+    }
+});
+
+notificationsBtn.addEventListener('click', async () => {
+    if (!('Notification' in window)) {
+        alert('Browser Anda tidak mendukung notifikasi');
+        return;
+    }
+
+    const permission = await Notification.requestPermission();
+    if (permission === 'granted') {
+        localStorage.setItem('weatherNotifications', 'enabled');
+        notificationsBtn.innerHTML = '<i class="fas fa-bell"></i>';
+        scheduleWeatherNotifications();
+    } else {
+        localStorage.setItem('weatherNotifications', 'disabled');
+        notificationsBtn.innerHTML = '<i class="fas fa-bell-slash"></i>';
+    }
+});
+
+function scheduleWeatherNotifications() {
+    setInterval(checkWeatherAndNotify, 3600000); // Check every hour
+}
+
+function checkWeatherAndNotify() {
+    if (localStorage.getItem('weatherNotifications') !== 'enabled') return;
+
+    const currentWeather = description.innerText.toLowerCase();
+    if (currentWeather.includes('hujan')) {
+        new Notification('Peringatan Cuaca', {
+            body: 'Akan turun hujan di lokasi Anda',
+            icon: 'https://openweathermap.org/img/wn/10d@2x.png'
+        });
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    initTheme();
+    
+    if (localStorage.getItem('weatherNotifications') === 'enabled') {
+        scheduleWeatherNotifications();
+    }
+});
+
+const originalFindUserLocation = findUserLocation;
+findUserLocation = function() {
+    const location = userLocation.value.trim();
+    if (location) {
+        originalFindUserLocation();
+    }
+};
+
+/* Fungsi Utama Pencarian Lokasi */
 function findUserLocation() {
+    showLoading();
+    
     fetch(WEATHER_API_ENDPOINT + userLocation.value)
         .then((response) => response.json())
-        .then((data) => {
-            if (data.cod != " " && data.cod != 200) {
+        .then(async (data) => {
+            if (data.cod !== 200) {
                 alert(data.message);
                 return;
             }
-            console.log(data);
             
-            city.innerHTML = data.name + ", " + data.sys.country;
+            const countryCode = data.sys.country;
+            city.innerHTML = data.name + ", " + countryCode;
             weatherIcon.style.background = `url(https://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png)`;
+            
             fetch(
                 WEATHER_DATA_ENDPOINT + `lon=${data.coord.lon}&lat=${data.coord.lat}`
             )
             .then((response) => response.json())
             .then((data) => {
-                console.log(data);
                 temperature.innerHTML = Math.floor(data.list[0].main.temp) + "°";
                 feelslike.innerHTML = "Terasa seperti: " + Math.floor(data.list[0].main.feels_like) + "°";
-                
 
                 const weatherTranslations = {
                     "thunderstorm with light rain": "badai petir dengan hujan ringan",
@@ -99,7 +238,6 @@ function findUserLocation() {
                     "overcast clouds": "awan mendung",
                 };                
 
-
                 function translateWeatherDescription(description) {
                     return weatherTranslations[description] || description;
                 }
@@ -110,15 +248,14 @@ function findUserLocation() {
                 function displayCurrentDate() {
                     const currentDate = new Date();
                     const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-                    const timeOptions = { hour: 'numeric', minute: 'numeric', hour12: true }; // Format 12 jam
+                    const timeOptions = { hour: 'numeric', minute: 'numeric', hour12: true };
                 
                     const formattedDate = currentDate.toLocaleDateString('id-ID', dateOptions);
                     const formattedTime = currentDate.toLocaleTimeString('id-ID', timeOptions);
                 
-                    date.innerHTML = `${formattedDate}, ${formattedTime}`; // Set inner HTML dari elemen date
+                    date.innerHTML = `${formattedDate}, ${formattedTime}`;
                 }
                 
-                // Panggil fungsi untuk menampilkan tanggal dan waktu saat halaman dimuat
                 displayCurrentDate();
 
                 HValue.innerHTML = Math.round(data.list[0].main.humidity) + "<span>%<span>";
@@ -188,11 +325,35 @@ function findUserLocation() {
                     dayElement.insertBefore(weatherImg, dayElement.firstChild);
                     dailyForecast.appendChild(dayElement);
                 });
-                
+
+                const windDegree = data.list[0].wind.deg;
+                const windDirection = getWindDirection(windDegree);
+                WDValue.innerHTML = `${windDirection}`;
+
+                const rainChance = data.list[0].pop ? Math.round(data.list[0].pop * 100) : 0;
+                RCValue.innerHTML = `${rainChance}<span>%</span>`;
+
+                const rainVolume = data.list[0].rain ? 
+                    (data.list[0].rain['3h'] || 0).toFixed(1) : 
+                    '0.0';
+                RVValue.innerHTML = `${rainVolume}<span>mm</span>`;
+
+                console.log('Wind Degree:', windDegree);
+                console.log('Wind Direction:', windDirection);
+                console.log('Rain Chance:', rainChance);
+                console.log('Rain Volume:', rainVolume);
             });
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Terjadi kesalahan saat mencari lokasi');
+        })
+        .finally(() => {
+            hideLoading();
         });
 }
 
+/* Fungsi Format Waktu */
 function formatUnixTime(dtValue, offset, options = {}) {
     const date = new Date(dtValue * 1000 + offset);
     return date.toLocaleString([], { timeZone: "UTC", ...options });
@@ -204,40 +365,45 @@ function getLongFormateDateTime(dtValue, offset, options) {
 
 converter.addEventListener("click", findUserLocation);
 
+/* Fungsi Arah Mata Angin */
+function getWindDirection(degree) {
+    if (degree === undefined) return 'N/A';
+    const directions = ['Utara', 'Timur Laut', 'Timur', 'Tenggara', 'Selatan', 'Barat Daya', 'Barat', 'Barat Laut'];
+    const index = Math.round(((degree %= 360) < 0 ? degree + 360 : degree) / 45) % 8;
+    return directions[index];
+}
+
+/* Fungsi Loading */
+function showLoading() {
+    const spinner = document.querySelector('.loading-spinner');
+    spinner.classList.add('show');
+}
+
+function hideLoading() {
+    const spinner = document.querySelector('.loading-spinner');
+    spinner.classList.remove('show');
+}
+
+/* Fungsi Animasi */
 function addAnimationDelays() {
-    // Animate highlights with delay
     document.querySelectorAll('.hightlights div').forEach((el, index) => {
         el.style.animationDelay = `${index * 0.1}s`;
     });
 
-    // Animate forecast cards with delay
     document.querySelectorAll('.daily-forecast div').forEach((el, index) => {
         el.style.animationDelay = `${index * 0.1}s`;
     });
 }
 
-function showLoading() {
-    const spinner = document.querySelector('.loading-spinner');
-    spinner.style.display = 'block';
-}
-
-function hideLoading() {
-    const spinner = document.querySelector('.loading-spinner');
-    spinner.style.display = 'none';
-}
-
 async function searchLocation(city) {
     showLoading();
     try {
-        // Reset animasi dengan menghapus dan menambahkan kembali class
         document.querySelectorAll('.hightlights div, .daily-forecast div').forEach(el => {
             el.style.opacity = '0';
         });
         
-        // Tunggu data fetch
-        await fetchWeatherData(city); // fungsi fetch yang sudah ada
+        await fetchWeatherData(city);
         
-        // Tambahkan kembali animasi
         addAnimationDelays();
     } catch (error) {
         console.error('Error:', error);
@@ -249,19 +415,26 @@ async function searchLocation(city) {
 document.addEventListener('DOMContentLoaded', () => {
     addAnimationDelays();
     
-    // Tambahkan efek ripple ke semua button
     document.querySelectorAll('button').forEach(button => {
         button.classList.add('ripple');
     });
 });
 
+/* Fungsi Update Icon */
 function updateWeatherIcon(iconCode) {
     const weatherIcon = document.querySelector('.weatherIcon');
     weatherIcon.style.opacity = '0';
     
     setTimeout(() => {
-        // Update icon (kode yang sudah ada)
         weatherIcon.style.opacity = '1';
         weatherIcon.style.animation = 'float 3s ease-in-out infinite';
     }, 300);
 }
+
+/* Event Listeners */
+userLocation.addEventListener("keypress", function(event) {
+    if (event.key === "Enter") {
+        event.preventDefault();
+        findUserLocation();
+    }
+});
