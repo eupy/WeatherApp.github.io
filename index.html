@@ -15,6 +15,15 @@
                 <input type="text" id="userLocation" placeholder="Masukkan Lokasi Anda">
                 <i class="fa fa-search" onclick="findUserLocation()"></i>
             </div>
+            <div class="button-group">
+                <button id="getLocation" class="feature-btn">
+                    <i class="fas fa-location-dot"></i>
+                    Lokasi Saya
+                </button>
+                <button id="darkMode" class="feature-btn">
+                    <i class="fas fa-moon"></i>
+                </button>
+            </div>
             <div class="loading-spinner"></div>
 
             <div class="weatherIcon"></div>
@@ -31,57 +40,63 @@
             <h2 class="heading">Sorotan Hari Ini</h2>
             <div class="hightlights">
                 <div class="humidity">
-                    Kelembapan
+                    <span>Kelembapan</span>
                     <i class="fa-solid fa-water"></i>
                     <h1 id="HValue"></h1>
                 </div>
                 <div class="wind-speed">
-                    Kecepatan Angin
+                    <span>Kecepatan Angin</span>
                     <i class="fa-solid fa-wind"></i>
                     <h1 id="WValue"></h1>
                 </div>
-                <div class="sun">
-                    <span>
-                        <i class="fa-solid fa-sun"></i>
-                        <p><span id="SRValue"></span>Terbit</p>
-                    </span>
-                    <span>
-                        <i class="fa-regular fa-sun"></i>
-                        <p><span id="SSValue"></span>Terbenam</p>
-                    </span>
-                </div>
                 <div class="clouds">
-                    Awan
+                    <span>Awan</span>
                     <i class="fa-solid fa-cloud"></i>
                     <h1 id="CValue"></h1>
                 </div>
                 <div class="uv-index">
-                    Visibilitas
+                    <span>Visibilitas</span>
                     <i class="fa-solid fa-eye"></i>
                     <h1 id="VValue"></h1>
                 </div>
                 <div class="pressure">
-                    Tekanan
+                    <span>Tekanan</span>
                     <i class="fa-solid fa-volcano"></i>
                     <h1 id="PValue"></h1>
                 </div>
+                <div class="wind-direction">
+                    <span>Arah Angin</span>
+                    <i class="fa-solid fa-compass"></i>
+                    <h1 id="WDValue"></h1>
+                </div>
+                <div class="rain-chance">
+                    <span>Kemungkinan Hujan</span>
+                    <i class="fa-solid fa-cloud-rain"></i>
+                    <h1 id="RCValue"></h1>
+                </div>
+                <div class="rain-volume">
+                    <span>Volume Hujan</span>
+                    <i class="fa-solid fa-droplet"></i>
+                    <h1 id="RVValue"></h1>
+                </div>
+                <div class="sun">
+                    <span>
+                        <p>Terbit</p>
+                        <i class="fa-solid fa-sun"></i>
+                        <span id="SRValue"></span>
+                    </span>
+                    <span>
+                        <p>Terbenam</p>
+                        <i class="fa-regular fa-sun"></i>
+                        <span id="SSValue"></span>
+                    </span>
+                </div>
             </div>
-            <h2 class="heasing">Minggu Ini</h2>
+            <h2 class="heading">Minggu Ini</h2>
             <div class="Forecast">
                 <div class="daily-forecast" id="dailyForecast"></div>
             </div>
         </div>
     </div>
-
-    <script>
-        const toggleButton = document.getElementById('toggle-theme');
-        let isLightTheme = true;
-
-        toggleButton.addEventListener('click', () => {
-            console.log("Tombol diklik!");
-            isLightTheme = !isLightTheme;
-            document.body.style.backgroundImage = isLightTheme ? "url('asset/cloud.jpg')" : "url('asset/night.jpg')";
-        });
-    </script>
 </body>
 </html>
