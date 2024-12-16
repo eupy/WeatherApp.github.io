@@ -37,6 +37,7 @@ function initTheme() {
 
 function updateDarkModeButton(theme) {
     darkModeBtn.innerHTML = `<i class="fas fa-${theme === 'dark' ? 'sun' : 'moon'}"></i>`;
+    document.body.style.backgroundImage = `url('asset/${theme === 'dark' ? 'night' : 'cloud'}.jpg')`;
 }
 
 darkModeBtn.addEventListener('click', () => {
