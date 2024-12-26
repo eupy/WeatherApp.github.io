@@ -456,34 +456,166 @@
     width: 100%;
   }
 
-  .hightlights div,
-  .day-forecast {
+  .weatherIcon {
+    height: 160px;
+    width: 160px;
+  }
+
+  .temperature {
+    font-size: 3rem;
+  }
+
+  .feelslike {
+    font-size: 1rem;
+  }
+
+  .description {
+    font-size: 1rem;
+  }
+
+  .date {
+    font-size: 0.9rem;
+  }
+
+  .city {
+    font-size: 1.2rem;
+    font-weight: 500;
+  }
+
+  .heading {
+    font-size: 1.4rem;
+    margin: 1rem 0;
+  }
+
+  .hightlights div {
     min-height: 110px;
+  }
+
+  .hightlights span {
+    font-size: 0.9rem;
+  }
+
+  .hightlights h1 {
+    font-size: 1.3rem;
+  }
+
+  .hightlights i {
+    font-size: 1.6rem;
   }
 
   .sun {
     grid-column: 1 / -1;
   }
+
+  .sun p {
+    font-size: 0.9rem;
+  }
+
+  #SRValue, #SSValue {
+    font-size: 0.9rem;
+  }
 }
 
 /* Mobile Small */
 @media screen and (max-width: 480px) {
-  .hightlights div,
+  .weatherIcon {
+    height: 130px;
+    width: 130px;
+  }
+
+  .temperature {
+    font-size: 2.5rem;
+  }
+
+  .feelslike {
+    font-size: 0.9rem;
+  }
+
+  .description {
+    font-size: 0.9rem;
+  }
+
+  .date {
+    font-size: 0.85rem;
+  }
+
+  .city {
+    font-size: 1.1rem;
+  }
+
+  .heading {
+    font-size: 1.2rem;
+    margin: 0.8rem 0;
+  }
+
+  .hightlights div {
+    min-height: 100px;
+    padding: 0.8rem;
+  }
+
+  .hightlights span {
+    font-size: 0.85rem;
+  }
+
+  .hightlights h1 {
+    font-size: 1.2rem;
+  }
+
+  .hightlights i {
+    font-size: 1.4rem;
+  }
+
+  .sun p {
+    font-size: 0.85rem;
+  }
+
+  #SRValue, #SSValue {
+    font-size: 0.85rem;
+  }
+
   .day-forecast {
     min-height: 100px;
     padding: 0.8rem;
   }
 
-  .weatherIcon {
-    height: 120px;
-    width: 120px;
+  .day-forecast img {
+    width: 35px;
+    height: 35px;
   }
 
-  .temperature { font-size: 2.5rem; }
-  .hightlights i { font-size: 1.4rem; }
-  .day-forecast img { width: 35px; height: 35px; }
-  .temp-max { font-size: 1.2rem; }
-  .temp-min { font-size: 0.85rem; }
+  .forecast-date {
+    font-size: 0.85rem;
+  }
+
+  .temp-max {
+    font-size: 1.2rem;
+  }
+
+  .temp-min {
+    font-size: 0.85rem;
+  }
+
+  .forecast-desc {
+    font-size: 0.8rem;
+  }
+
+  .feature-btn {
+    font-size: 0.85rem;
+    padding: 0.7rem;
+  }
+
+  .feature-btn i {
+    font-size: 1rem;
+  }
+
+  .input-grup input {
+    font-size: 0.9rem;
+    padding: 0.9rem 1rem;
+  }
+
+  .input-grup .fa-search {
+    font-size: 1.1rem;
+  }
 }
 
 /* =========================================
