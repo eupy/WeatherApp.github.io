@@ -285,25 +285,33 @@ function findUserLocation() {
 
                 const dailyData = [];
                 const uniqueDates = new Set();
+                const today = new Date().setHours(0, 0, 0, 0);
 
                 for (let i = 0; i < data.list.length; i++) {
-                    const date = new Date(data.list[i].dt * 1000).toLocaleDateString();
-                    if (!uniqueDates.has(date)) {
-                        uniqueDates.add(date);
+                    const forecastDate = new Date(data.list[i].dt * 1000);
+                    forecastDate.setHours(0, 0, 0, 0);
+                    
+                    // Skip if it's today
+                    if (forecastDate.getTime() === today) continue;
+                    
+                    const dateStr = forecastDate.toLocaleDateString();
+                    if (!uniqueDates.has(dateStr)) {
+                        uniqueDates.add(dateStr);
                         dailyData.push(data.list[i]);
                     }
-                    if (dailyData.length >= 8) break;
+                    if (dailyData.length >= 5) break; // Limit to 5 future days
                 }
 
                 const dailyForecast = document.getElementById('dailyForecast');
                 dailyForecast.innerHTML = '';
 
                 dailyData.forEach((day) => {
-                    const date = new Date(day.dt * 1000).toLocaleDateString();
+                    const date = new Date(day.dt * 1000);
+                    const formattedDate = date.toLocaleDateString('id-ID', { weekday: 'short', day: 'numeric' });
                     const temp = Math.floor(day.main.temp);
+                    const tempMin = Math.floor(day.main.temp_min);
+                    const tempMax = Math.floor(day.main.temp_max);
                     const description = translateWeatherDescription(day.weather[0].description);
-                    const humidity = Math.round(day.main.humidity);
-                    const windSpeed = Math.round(day.wind.speed);
 
                     const dayElement = document.createElement('div');
                     dayElement.classList.add('day-forecast');
@@ -316,11 +324,13 @@ function findUserLocation() {
                     dayElement.style.animation = 'fadeIn 0.5s ease forwards';
                     
                     dayElement.innerHTML = `
-                        <p>${date}</p>
-                        <p>Temperature: ${temp}°C</p>
-                        <p>keterangan: ${description}</p>
-                        <p>Kelembapan: ${humidity}%</p>
-                        <p>Kecepatan angin: ${windSpeed} m/s</p>
+                        <p class="forecast-date">${formattedDate}</p>
+                        <div class="forecast-temp">
+                            <span class="temp-max">${tempMax}°</span>
+                            <span class="temp-separator">-</span>
+                            <span class="temp-min">${tempMin}°</span>
+                        </div>
+                        <p class="forecast-desc">${description}</p>
                     `;
                     
                     dayElement.insertBefore(weatherImg, dayElement.firstChild);
